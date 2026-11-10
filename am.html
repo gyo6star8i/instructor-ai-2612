@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 에이전트로 설계하는 참여형 강의 · 실습</title><style>
+:root{--bg:#F3F3EF;--ink:#363636;--green:#508172;--green-d:#3d6659;--card:#E6E6DF;--tint:#DCE6E0;--white:#FAFAF7;--rule:#D3D3C6;--gray:#7A7A72;--orange:#E97132}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","JASO Sans","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:18px;line-height:1.65;word-break:keep-all}
+a{color:var(--green-d)}
+button{font:inherit;cursor:pointer}
+.top{background:var(--green);color:var(--bg);padding:14px 24px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;justify-content:space-between}
+.top .course{font-size:15px;opacity:.9}
+.top .name{font-weight:700;font-size:19px}
+.top .who{font-size:15px;opacity:.9}
+.links{display:flex;flex-wrap:wrap;gap:8px;padding:12px 24px;border-bottom:1px solid var(--rule);background:var(--white);align-items:center}
+.links span{font-size:14px;color:var(--gray);margin-right:4px}
+.links a{display:inline-block;padding:6px 14px;border:1.5px solid var(--green);border-radius:999px;text-decoration:none;font-size:15px;font-weight:600;color:var(--green-d);background:var(--bg)}
+.links a:hover{background:var(--tint)}
+.links a.off{border-color:var(--rule);color:var(--gray);pointer-events:none}
+.links a.swap{margin-left:auto;background:var(--green);color:var(--bg)}
+.wrap{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1400px;margin:0 auto;min-height:calc(100vh - 190px)}
+nav{padding:24px 12px 24px 24px;border-right:1px solid var(--rule)}
+nav .grp{font-size:13px;font-weight:700;color:var(--green);margin:18px 0 6px 10px;letter-spacing:.02em}
+nav .grp:first-child{margin-top:0}
+nav button{display:flex;gap:10px;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:8px;color:var(--ink);font-size:15.5px;line-height:1.4}
+nav button .n{color:var(--gray);font-variant-numeric:tabular-nums;min-width:20px}
+nav button:hover{background:var(--card)}
+nav button.on{background:var(--green);color:var(--bg);font-weight:600}
+nav button.on .n{color:var(--tint)}
+nav button.done .n{color:var(--green)}
+main{padding:36px 44px 120px;min-width:0}
+.screen{display:none;max-width:980px}
+.screen.on{display:block;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--gray);margin-bottom:6px}
+.tag{display:inline-block;padding:2px 12px;border-radius:999px;font-weight:700;font-size:14px;background:var(--tint);color:var(--green-d)}
+.tag.do{background:var(--green);color:var(--bg)}
+.tag.up{background:var(--orange);color:#fff}
+h1{font-size:40px;line-height:1.25;margin:0 0 6px;font-weight:600;letter-spacing:-.02em}
+h1+.dash{width:44px;height:4px;background:var(--green);margin:14px 0 22px}
+.lead{font-size:20px;margin:0 0 26px;max-width:46em}
+h2{font-size:23px;margin:34px 0 12px;font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:0 0 8px}
+.cardx{background:var(--card);padding:20px 22px;border-radius:4px}
+.cardx.g{background:var(--green);color:var(--bg)}
+.cardx .k{font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px}
+.cardx.g .k{color:var(--tint)}
+.cardx .t{font-size:22px;font-weight:700;line-height:1.3;margin-bottom:6px}
+.cardx .d{font-size:16.5px;line-height:1.55}
+.say{border:1.5px solid var(--green);padding:16px 22px;font-size:20px;text-align:center;margin:18px 0;border-radius:4px}
+.say b{color:var(--green-d)}
+ol.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+ol.steps li{counter-increment:s;position:relative;padding:14px 18px 14px 64px;background:var(--white);border:1px solid var(--rule);margin-bottom:8px;border-radius:4px}
+ol.steps li::before{content:counter(s);position:absolute;left:16px;top:13px;width:34px;height:34px;border-radius:50%;background:var(--green);color:var(--bg);font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.steps li b{display:block;font-size:19px}
+ol.steps li span{font-size:16.5px;color:#555}
+.prompt{background:var(--white);border:1px solid var(--rule);border-radius:4px;margin:14px 0 10px;position:relative}
+.prompt .ph{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 8px 0}
+.prompt .ph span{background:var(--green);color:var(--bg);font-size:14px;font-weight:700;padding:4px 16px}
+.copy{border:1.5px solid var(--green);background:var(--bg);color:var(--green-d);border-radius:6px;padding:5px 16px;font-weight:700;font-size:15px}
+.copy:hover{background:var(--tint)}
+.copy.ok{background:var(--green);color:var(--bg)}
+.prompt pre{margin:0;padding:6px 22px 20px;white-space:pre-wrap;font:inherit;font-size:17.5px;line-height:1.7}
+.prompt pre mark{background:none;color:var(--orange);font-weight:700}
+.form{background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:18px 20px;display:grid;gap:12px;margin:10px 0}
+.form label{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:start}
+.form label b{font-size:17px;padding-top:8px}
+.form label b small{display:block;font-weight:400;color:var(--gray);font-size:14px}
+.form input,.form textarea{font:inherit;font-size:17px;width:100%;padding:9px 12px;border:1.5px solid var(--rule);border-radius:6px;background:var(--bg);color:var(--ink)}
+.form textarea{min-height:76px;resize:vertical;line-height:1.5}
+.form textarea.tall{min-height:150px}
+.form input:focus,.form textarea:focus{outline:2px solid var(--green);border-color:var(--green)}
+.form .multi{display:flex;flex-wrap:wrap;gap:8px}
+.form .multi label{display:flex;grid-template-columns:none;gap:8px;align-items:center;border:1.5px solid var(--rule);border-radius:6px;padding:7px 12px;background:var(--bg);cursor:pointer}
+.form .multi label:has(input:checked){border-color:var(--green);background:var(--tint)}
+.form .multi input{width:20px;height:20px;accent-color:var(--green)}
+.saved{font-size:15px;color:var(--gray);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.tabs span{font-size:15.5px;color:var(--gray)}
+.tabs button{border:1.5px solid var(--green);background:var(--bg);color:var(--green-d);border-radius:999px;padding:5px 14px;font-size:15.5px;font-weight:600}
+.tabs button:hover{background:var(--tint)}
+.hint{font-size:15.5px;color:var(--gray);margin:6px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chips button{border:1.5px dashed var(--green);background:var(--white);border-radius:6px;padding:8px 14px;font-size:16px;color:var(--ink);text-align:left}
+.chips button:hover{background:var(--tint)}
+.checks label{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;background:var(--white);border:1px solid var(--rule);margin-bottom:8px;border-radius:4px;cursor:pointer}
+.checks input{width:22px;height:22px;margin-top:3px;accent-color:var(--green);flex:none}
+.checks label:has(input:checked){background:var(--tint);border-color:var(--green)}
+.checks small{display:block;color:var(--gray);font-size:15px}
+table{border-collapse:collapse;width:100%;margin:8px 0;background:var(--white);font-size:17px}
+th,td{border:1px solid #8A8A78;padding:10px 14px;text-align:center}
+th{background:var(--card);font-weight:600}
+td:first-child{font-weight:700}
+.padlet{display:grid;grid-template-columns:minmax(200px,280px) 1fr;gap:18px;align-items:stretch}
+.padlet .go{background:var(--card);padding:22px;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;text-align:center;border-radius:4px}
+.btn{display:inline-block;background:var(--green);color:var(--bg)!important;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:8px;border:0;font-size:18px}
+.btn:hover{background:var(--green-d)}
+.btn.off{background:var(--rule);color:var(--gray)!important;pointer-events:none}
+.btn.line{background:var(--bg);color:var(--green-d)!important;border:1.5px solid var(--green)}
+.q{border:1.5px solid var(--green);padding:16px 20px;margin-bottom:10px;border-radius:4px}
+.q b{font-size:21px;display:block}
+.q span{color:var(--gray);font-size:16px}
+.timer{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--tint);padding:10px 16px;margin:0 0 22px;border-radius:4px}
+.timer .goal{flex:1;min-width:240px}
+.timer .goal b{color:var(--green-d);margin-right:10px}
+.timer .clock{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;min-width:86px;text-align:right}
+.timer .clock.end{color:var(--orange)}
+.timer button{border:1.5px solid var(--green);background:var(--bg);border-radius:6px;padding:4px 12px;font-size:15px;font-weight:600;color:var(--green-d)}
+.urlbox{background:var(--white);border:1px solid var(--rule);padding:18px 20px;border-radius:4px}
+.urlbox .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.urlbox label{flex:1;min-width:200px;font-size:15px;color:var(--gray)}
+.urlbox input{display:block;width:100%;font:inherit;padding:9px 12px;border:1.5px solid var(--rule);border-radius:6px;background:var(--bg);margin-top:4px}
+.urlbox input:focus{outline:2px solid var(--green);border-color:var(--green)}
+.urlbox .out{font-size:21px;font-weight:700;word-break:break-all;padding:12px 14px;background:var(--tint);border-radius:6px;margin-bottom:12px}
+details{background:var(--white);border:1px solid var(--rule);margin-bottom:8px;border-radius:4px}
+summary{padding:13px 18px;font-weight:700;cursor:pointer;font-size:19px}
+details[open] summary{border-bottom:1px solid var(--rule);background:var(--card)}
+details ul{margin:10px 0 14px;padding-left:38px}
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--white);border-top:3px solid var(--green);padding:10px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:5}
+.foot button{border:0;background:var(--green);color:var(--bg);padding:10px 20px;border-radius:8px;font-weight:700;font-size:16px;max-width:36%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.foot button:disabled{background:var(--rule);color:var(--gray);cursor:default}
+.foot .pos{font-size:15px;color:var(--gray);text-align:center;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:4px;background:var(--rule)}
+.bar i{display:block;height:100%;background:var(--green);width:0;transition:width .25s}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:16px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+.menu{display:none}
+@media(max-width:900px){
+ body{font-size:17px}
+ .wrap{grid-template-columns:1fr}
+ nav{display:none;border-right:0;border-bottom:1px solid var(--rule);padding:12px 16px}
+ nav.open{display:block}
+ .menu{display:inline-block;border:1.5px solid var(--bg);background:none;color:var(--bg);border-radius:6px;padding:4px 12px;font-size:15px}
+ main{padding:24px 16px 120px}
+ h1{font-size:30px}
+ .lead{font-size:18px}
+ .padlet{grid-template-columns:1fr}
+ .form label{grid-template-columns:1fr;gap:4px}
+ .form label b{padding-top:0}
+ .foot .pos{display:none}
+ .foot button{max-width:48%}
+ .links{padding:10px 16px}
+ .links a.swap{margin-left:0}
+ .top{padding:12px 16px}
+}
+@media(prefers-reduced-motion:reduce){.screen.on{animation:none}}
+</style></head><body>
+<header class="top"><div><div class="course">일반직강사요원역량강화 과정 · 2026. 12. 3.(목) · 오전(1~3교시)</div><div class="name">AI 에이전트로 설계하는 참여형 강의</div></div>
+<div class="who">구미초등학교 교감 Ph.D. 이희명 <button class="menu">목차</button></div></header>
+<div class="bar"><i></i></div>
+<div class="links"><span>바로가기</span><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a><a data-link="padlet" href="#">패들렛</a><a class="swap" href="pm.html">오후 실습 →</a></div>
+<div class="wrap"><nav aria-label="목차"></nav><main><section class="screen" data-group="시작" data-title="오늘의 결과물과 준비"><div class="kicker"><span class="tag">안내</span><span>시작</span></div><h1>오늘의 결과물과 준비</h1><div class="dash"></div><p class="lead">강의실을 나갈 때 <b>내 강의의 인터넷 주소 하나</b>를 가지고 갑니다. 오전에는 PPT 한 벌까지 만듭니다.</p><h2>하루의 흐름</h2><table><tr><th>교시</th><th>하는 일</th><th>패들렛 제출</th></tr><tr><td>1교시</td><td>AI와 강의 주제 정하기</td><td>① 강의 주제와 대상</td></tr><tr><td>2교시</td><td>슬라이드별 원고 쓰기</td><td>② 슬라이드 원고</td></tr><tr><td>3교시</td><td>샘플 서식으로 PPT 만들기</td><td>③ 완성 PPT</td></tr><tr><td>5교시</td><td>PPT를 웹페이지로 만들기</td><td>④ 웹페이지 화면</td></tr><tr><td>6교시</td><td>깃허브로 배포하고 투표하기</td><td>⑤ 내 강의 주소</td></tr><tr><td>7교시</td><td>퀴즈로 확인하고 마무리</td><td>⑥ 소감 한 줄</td></tr></table><h2>시작 전에 확인합니다</h2><div class="checks"><label><input type="checkbox"><div>AI 계정<small>Claude와 Gemini에 둘 다 로그인했습니다. (무료 계정은 사용량 제한이 있어 두 개를 함께 엽니다.)</small></div></label><label><input type="checkbox"><div>깃허브<small>가입과 이메일 인증을 마쳤습니다. (오후에 사용합니다.)</small></div></label><label><input type="checkbox"><div>샘플 PPT<small>내가 쓰던 PPT 한 개가 노트북에 있습니다. 개인정보가 담긴 장은 지웠습니다.</small></div></label><label><input type="checkbox"><div>패들렛<small>위쪽 바로가기의 패들렛이 열립니다.</small></div></label></div><div class="say">매 교시는 <b>이론 20분 → 실습 25분 → 패들렛 공유 5분</b>으로 진행합니다. 막히면 바로 손을 들어 주세요.</div></section>
+<section class="screen" data-group="1교시 · 주제 정하기" data-title="참여형 강의와 AI 에이전트"><div class="kicker"><span class="tag">이론</span><span>1교시 · 주제 정하기</span></div><h1>참여형 강의와 AI 에이전트</h1><div class="dash"></div><p class="lead">기억에 남는 연수와 잊힌 연수의 차이는 내용의 양이 아니라 학습자가 움직인 시간에서 나옵니다.</p><h2>참여형 강의의 3요소</h2><div class="cards"><div class="cardx"><div class="k">01</div><div class="t">묻기</div><div class="d">정답보다 생각을 묻는 질문으로 시작합니다.</div></div><div class="cardx g"><div class="k">02</div><div class="t">해 보기</div><div class="d">듣는 시간보다 손을 쓰는 시간을 길게 둡니다.</div></div><div class="cardx"><div class="k">03</div><div class="t">나누기</div><div class="d">결과를 서로 보고 한마디씩 주고받습니다.</div></div></div><h2>묻는 AI에서, 일하는 AI로</h2><div class="cards"><div class="cardx"><div class="k">챗봇</div><div class="t">질문 하나에 답 하나</div><div class="d">결과를 사람이 복사해 옮기고, 다음 단계도 사람이 다시 지시합니다.</div></div><div class="cardx g"><div class="k">AI 에이전트</div><div class="t">역할·자료·절차를 맡긴 조수</div><div class="d">목표를 주면 순서를 스스로 정하고 검색·작성·정리를 이어서 처리합니다.</div></div></div><div class="say">도구는 바뀌어도, <b>일을 설명하고 결과를 확인하는 힘</b>은 사람에게 남습니다.</div><h2>AI에게 맡길 일, 내가 할 일</h2><table><tr><th>AI에게 맡긴다</th><th>AI와 함께 다듬는다</th><th>내가 직접 한다</th></tr><tr><td>목차와 흐름 초안</td><td>학습목표 문장</td><td>무엇을 가르칠지 결정</td></tr><tr><td>사례와 예시 문장</td><td>슬라이드 문장 줄이기</td><td>법령과 수치 확인</td></tr><tr><td>퀴즈 문항 초안</td><td>디자인 고치기</td><td>학습자와의 대화</td></tr></table></section>
+<section class="screen" data-group="1교시 · 주제 정하기" data-title="좋은 강의 주제의 조건"><div class="kicker"><span class="tag">이론</span><span>1교시 · 주제 정하기</span></div><h1>좋은 강의 주제의 조건</h1><div class="dash"></div><p class="lead">주제가 좁을수록 학습자가 참여할 시간이 생깁니다.</p><div class="cards"><div class="cardx"><div class="k">조건 1</div><div class="t">좁게</div><div class="d">‘계약 실무’보다 ‘수의계약 한도 판단하기’</div></div><div class="cardx"><div class="k">조건 2</div><div class="t">대상이 분명하게</div><div class="d">신규 공무원인지, 경력 담당자인지</div></div><div class="cardx g"><div class="k">조건 3</div><div class="t">50분 안에</div><div class="d">끝나고 할 수 있게 되는 것 한 가지</div></div></div></section>
+<section class="screen" data-group="1교시 · 주제 정하기" data-title="실습 1. AI와 강의 주제 정하기"><div class="kicker"><span class="tag do">실습</span><span>1교시 · 주제 정하기</span></div><h1>실습 1. AI와 강의 주제 정하기</h1><div class="dash"></div><p class="lead">AI와 대화하며 오늘 만들 강의 주제 하나를 정합니다.</p><div class="timer" data-min="25"><div class="goal"><b>목표</b>오늘 만들 강의 주제 하나 정하기</div><div class="clock"></div><button class="st">시작</button><button class="rs">처음으로</button></div><ol class="steps"><li><b>내 업무 말하기</b><span>아래 세 칸을 채우면 요청문이 완성됩니다. 복사해서 AI에게 보냅니다.</span></li><li><b>후보 받기</b><span>강의 주제 후보 다섯 개를 받습니다.</span></li><li><b>하나로 좁히기</b><span>마음에 드는 후보를 골라 50분 분량에 맞게 확정하고, 맨 아래 칸에 적어 둡니다.</span></li></ol><h2>내 요청문 만들기</h2><div class="tabs"><span>내 업무가 바로 떠오르지 않으면 예시로 채우기</span><button data-fill="{&quot;job&quot;: &quot;학교 회계와 계약&quot;, &quot;faq&quot;: &quot;수의계약 한도, 견적서를 몇 개 받아야 하는지&quot;, &quot;who&quot;: &quot;발령 1년 차 행정실 주무관&quot;, &quot;topic&quot;: &quot;수의계약 한도 판단하기&quot;}">A. 계약</button><button data-fill="{&quot;job&quot;: &quot;교직원 복무와 인사&quot;, &quot;faq&quot;: &quot;연가 일수 계산, 병가와 공가의 차이&quot;, &quot;who&quot;: &quot;복무 업무를 처음 맡은 담당자&quot;, &quot;topic&quot;: &quot;연가 일수 계산하기&quot;}">B. 복무</button><button data-fill="{&quot;job&quot;: &quot;기록물 관리와 공문서&quot;, &quot;faq&quot;: &quot;보존 기간 정하기, 공개 여부 고르기&quot;, &quot;who&quot;: &quot;신규 공무원&quot;, &quot;topic&quot;: &quot;공문서 공개 여부 정하기&quot;}">C. 기록물</button></div><div class="form"><label><b>내가 맡은 업무<small></small></b><input data-f="job" placeholder="예) 학교 회계와 계약" autocomplete="off"></label><label><b>자주 받는 질문<small>동료가 자주 묻는 것</small></b><textarea data-f="faq" placeholder="예) 수의계약 한도, 견적서를 몇 개 받아야 하는지"></textarea></label><label><b>강의 대상<small>누가 듣는지</small></b><input data-f="who" placeholder="예) 발령 1년 차 행정실 주무관" autocomplete="off"></label></div><p class="saved">쓴 내용은 이 브라우저에만 저장되고, 다음 실습의 요청문에 그대로 이어집니다.</p><div class="prompt" data-tpl="나는 교육청(학교)에서 일하는 일반직 공무원이고, 동료 직원을 대상으로 하는 강의를 준비하고 있어.&#10;- 내가 맡은 업무: {job|내가 맡은 업무}&#10;- 동료에게 자주 받는 질문: {faq|자주 받는 질문}&#10;- 강의 대상: {who|누가 듣는지}&#10;&#10;이 업무에서 50분 안에 끝낼 수 있는 좁은 강의 주제 후보를 5개 제안해줘.&#10;후보마다 ‘강의가 끝나면 할 수 있게 되는 것’을 한 문장으로 함께 적어줘."><div class="ph"><span>내 요청문</span><button class="copy">복사</button></div><pre></pre></div><p class="hint">칸을 채우면 요청문이 완성됩니다. 주황색 【 】가 남아 있으면 아직 채우지 않은 칸입니다.</p><h2>이어서 요청하기 (누르면 복사됩니다)</h2><div class="chips"><button>【2】번 주제가 좋아. 50분에 맞는 분량인지 점검하고, 더 좁힐 수 있으면 좁혀줘.</button><button>이 주제를 듣는 사람이 가장 헷갈려 하는 점 세 가지를 알려줘.</button><button>주제 이름을 ‘~하기’로 끝나는 한 줄로 다듬어줘.</button></div><h2>정한 주제 적어 두기</h2><div class="form"><label><b>내 강의 주제<small>2교시부터 계속 씁니다</small></b><input data-f="topic" placeholder="예) 수의계약 한도 판단하기" autocomplete="off"></label></div><p class="saved">쓴 내용은 이 브라우저에만 저장되고, 다음 실습의 요청문에 그대로 이어집니다.</p><p class="hint">실제 이름과 개인정보, 비공개 문서는 넣지 않습니다.</p></section>
+<section class="screen" data-group="1교시 · 주제 정하기" data-title="패들렛 ① 강의 주제와 대상"><div class="kicker"><span class="tag up">제출</span><span>1교시 · 주제 정하기</span></div><h1>패들렛 ① 강의 주제와 대상</h1><div class="dash"></div><p class="lead">정한 주제와 대상을 한 줄씩 올립니다. 다른 분의 주제도 읽어 보세요.</p><div class="padlet"><div class="go"><a class="btn" data-link="padlet1" href="#">패들렛 열기</a><div>한 줄이면 충분합니다</div></div><div><div class="q"><b>내 강의 주제는?</b><span>예) 수의계약 한도 판단하기</span></div><div class="q"><b>누구에게 하는 강의인가요?</b><span>예) 발령 1년 차 행정실 주무관</span></div></div></div></section>
+<section class="screen" data-group="2교시 · 슬라이드 원고 쓰기" data-title="원고가 설계도입니다"><div class="kicker"><span class="tag">이론</span><span>2교시 · 슬라이드 원고 쓰기</span></div><h1>원고가 설계도입니다</h1><div class="dash"></div><p class="lead">PPT부터 열면 꾸미는 데 시간을 다 씁니다. 장별 제목과 핵심 문장을 먼저 글로 정리합니다.</p><h2>강의의 뼈대</h2><div class="cards"><div class="cardx"><div class="k">도입 · 5분</div><div class="t">왜 필요한지 묻기</div><div class="d">오늘의 목표를 알립니다.</div></div><div class="cardx g"><div class="k">전개 · 35분</div><div class="t">설명은 짧게</div><div class="d">직접 해 보는 시간을 길게 둡니다.</div></div><div class="cardx"><div class="k">정리 · 10분</div><div class="t">확인하고 연결하기</div><div class="d">배운 것을 확인하고 돌아가서 할 일을 정합니다.</div></div></div><p class="hint">시간 배분은 50분 강의의 한 가지 예입니다. 주제에 맞게 조정하세요.</p><h2>학습목표는 ‘할 수 있다’로</h2><table><tr><th>‘안다’로 쓴 목표</th><th>‘할 수 있다’로 쓴 목표</th></tr><tr><td>수의계약 제도를 이해한다</td><td>사례를 보고 한도를 판단할 수 있다</td></tr><tr><td>복무 규정을 안다</td><td>연가 일수를 계산할 수 있다</td></tr></table><div class="say">목표가 <b>행동</b>으로 쓰이면 실습과 평가가 저절로 정해집니다.</div><h2>한 장에 하나의 메시지</h2><div class="checks"><label><input type="checkbox"><div>제목은 주제가 아니라 주장으로 썼나요?<small>‘수의계약 개요’보다 ‘한도는 금액과 유형으로 정해진다’</small></div></label><label><input type="checkbox"><div>본문이 세 줄을 넘으면 나눴나요?<small>기억할 것이 둘이면 두 장으로 나눕니다.</small></div></label><label><input type="checkbox"><div>참여 지점을 표시했나요?<small>도입에는 묻기, 전개에는 해 보기, 정리에는 확인하기</small></div></label></div></section>
+<section class="screen" data-group="2교시 · 슬라이드 원고 쓰기" data-title="요청문, 네 칸이면 됩니다"><div class="kicker"><span class="tag">이론</span><span>2교시 · 슬라이드 원고 쓰기</span></div><h1>요청문, 네 칸이면 됩니다</h1><div class="dash"></div><p class="lead">AI는 모르는 것을 그럴듯하게 지어냅니다. 아는 사람이 알려 줘야 합니다.</p><div class="cards"><div class="cardx"><div class="k">대상</div><div class="t">누가 듣는지</div><div class="d">“발령 1년 차 주무관”</div></div><div class="cardx"><div class="k">입력</div><div class="t">무엇을 주는지</div><div class="d">지침, 편람, 지난 자료</div></div><div class="cardx"><div class="k">출력</div><div class="t">무엇을 받는지</div><div class="d">장별 제목과 핵심 문장</div></div><div class="cardx g"><div class="k">규칙</div><div class="t">지켜야 할 조건</div><div class="d">“한 장에 메시지 하나”</div></div></div><h2>나쁜 예와 좋은 예</h2><table><tr><th>막연한 요청</th><th>네 칸을 채운 요청</th></tr><tr><td>“계약 강의 PPT 만들어줘”</td><td>누가 듣는지 알려 줌</td></tr><tr><td>대상도 분량도 없음</td><td>근거 자료를 함께 줌</td></tr><tr><td>어디서 본 듯한 결과가 나옴</td><td>형식과 조건을 정해 줌</td></tr></table></section>
+<section class="screen" data-group="2교시 · 슬라이드 원고 쓰기" data-title="실습 2. 슬라이드별 원고 만들기"><div class="kicker"><span class="tag do">실습</span><span>2교시 · 슬라이드 원고 쓰기</span></div><h1>실습 2. 슬라이드별 원고 만들기</h1><div class="dash"></div><p class="lead">네 칸 요청문으로 슬라이드별 원고(15장 이내)를 완성합니다.</p><div class="timer" data-min="25"><div class="goal"><b>목표</b>슬라이드별 원고(15장 이내) 완성하기</div><div class="clock"></div><button class="st">시작</button><button class="rs">처음으로</button></div><ol class="steps"><li><b>네 칸 채우기</b><span>주제와 대상은 1교시에 쓴 내용이 들어와 있습니다. 입력과 규칙을 채웁니다. 지침이나 편람은 파일로 올리거나 붙여넣습니다.</span></li><li><b>목차 확인하기</b><span>AI가 낸 목차를 보고 순서와 분량을 조정합니다.</span></li><li><b>원고 받기</b><span>장별 제목과 핵심 문장, 참여 지점 두 곳이 표시된 원고를 받습니다.</span></li></ol><h2>내 요청문 만들기</h2><div class="form"><label><b>강의 주제<small></small></b><input data-f="topic" placeholder="예) 수의계약 한도 판단하기" autocomplete="off"></label><label><b>대상<small>누가 듣는지</small></b><input data-f="who" placeholder="예) 발령 1년 차 행정실 주무관 40명" autocomplete="off"></label><label><b>입력<small>함께 주는 자료</small></b><input data-f="src" placeholder="예) 함께 올린 수의계약 지침 요약" autocomplete="off"></label><label><b>규칙<small>더 지킬 조건 (없으면 비워 두기)</small></b><input data-f="rule" placeholder="예) 실제 사례 두 개를 넣을 것" autocomplete="off"></label></div><p class="saved">쓴 내용은 이 브라우저에만 저장되고, 다음 실습의 요청문에 그대로 이어집니다.</p><div class="prompt" data-tpl="‘{topic|내 강의 주제}’을(를) 주제로 50분 강의를 준비하고 있어. 슬라이드별 원고를 만들어줘.&#10;- 대상: {who|누가 듣는지}&#10;- 입력: {src|함께 올리거나 붙여 넣은 자료 이름}&#10;- 출력: 장 번호, 제목, 핵심 문장 한 줄. 도입·전개·정리로 구분&#10;- 규칙: 한 장에 메시지 하나, 15장 이내, 학습자가 참여하는 활동 두 곳을 [참여]로 표시{rule?}&#10;&#10;학습목표는 ‘~할 수 있다’로 2개만 써줘.&#10;자료에 없는 법령이나 수치는 지어내지 말고 ‘확인 필요’라고 적어줘.&#10;먼저 목차만 보여 주고, 내가 확인하면 장별 원고를 써줘."><div class="ph"><span>내 요청문</span><button class="copy">복사</button></div><pre></pre></div><p class="hint">칸을 채우면 요청문이 완성됩니다. 주황색 【 】가 남아 있으면 아직 채우지 않은 칸입니다.</p><h2>이어서 요청하기 (누르면 복사됩니다)</h2><div class="chips"><button>목차 좋아. 이대로 장별 원고를 써줘.</button><button>도입 장을 질문으로 시작하도록 바꿔줘.</button><button>【7】장은 내용이 많아. 두 장으로 나눠줘.</button><button>모든 제목을 주제가 아니라 주장하는 문장으로 바꿔줘.</button><button>문장을 더 짧게, 내가 말하듯이 줄여줘.</button></div><h2>완성한 원고 붙여 두기</h2><div class="form"><label><b>슬라이드 원고<small>3교시 요청문에 들어갑니다</small></b><textarea data-f="script" placeholder="AI가 써 준 장별 원고를 여기에 붙여넣으세요" class="tall"></textarea></label></div><p class="saved">쓴 내용은 이 브라우저에만 저장되고, 다음 실습의 요청문에 그대로 이어집니다.</p><p class="hint">다 쓰면 옆 사람과 원고를 바꿔 읽고, 이 원고만 보고 강의 흐름이 그려지는지 점검합니다.</p></section>
+<section class="screen" data-group="2교시 · 슬라이드 원고 쓰기" data-title="패들렛 ② 슬라이드 원고"><div class="kicker"><span class="tag up">제출</span><span>2교시 · 슬라이드 원고 쓰기</span></div><h1>패들렛 ② 슬라이드 원고</h1><div class="dash"></div><p class="lead">완성한 원고를 붙여 넣습니다. 3교시에 이 원고로 PPT를 만듭니다.</p><div class="padlet"><div class="go"><a class="btn" data-link="padlet2" href="#">패들렛 열기</a><div>쉬는 시간에 샘플 PPT를<br>바탕 화면에 꺼내 두세요</div></div><div><div class="q"><b>슬라이드 원고를 올려 주세요</b><span>장별 제목과 핵심 문장이 보이게 붙여넣기</span></div><div class="q"><b>가장 고민한 장은?</b><span>예) 7장, 사례를 무엇으로 할지</span></div></div></div></section>
+<section class="screen" data-group="3교시 · PPT 만들기" data-title="AI가 만든 티를 덜어 냅니다"><div class="kicker"><span class="tag">이론</span><span>3교시 · PPT 만들기</span></div><h1>AI가 만든 티를 덜어 냅니다</h1><div class="dash"></div><p class="lead">하나씩 보면 멀쩡하지만, 모아 놓으면 누가 만들었는지 드러납니다.</p><table><tr><th>꾸밈</th><th>문장</th><th>내용</th></tr><tr><td>뜻 없는 아이콘과 그림</td><td>모든 장이 글머리표 세 줄</td><td>어느 기관에나 맞는 말</td></tr><tr><td>장마다 다른 색과 모양</td><td>‘혁신’ ‘극대화’ 같은 큰 말</td><td>출처 없는 수치</td></tr><tr><td>과한 그라데이션</td><td>내 말투가 아닌 문장</td><td>우리 지침과 다른 용어</td></tr></table><h2>꾸밈은 덜어 냅니다</h2><div class="cards"><div class="cardx"><div class="k">색</div><div class="t">주된 색 하나, 강조 색 하나</div><div class="d"></div></div><div class="cardx"><div class="k">그림</div><div class="t">내용을 설명하는 그림만</div><div class="d"></div></div><div class="cardx"><div class="k">글꼴</div><div class="t">제목용 하나, 본문용 하나</div><div class="d"></div></div></div><h2>문장은 내 말로 바꿉니다</h2><table><tr><th>AI가 쓴 문장</th><th>내 말로 고친 문장</th></tr><tr><td>업무 효율성을 극대화합니다</td><td>결재가 하루 빨라집니다</td></tr><tr><td>다양한 방안을 모색해야 합니다</td><td>세 가지 중 하나를 고릅니다</td></tr><tr><td>체계적인 관리가 중요합니다</td><td>매주 금요일에 대장을 확인합니다</td></tr></table><div class="say">디자인을 AI에게 맡기지 않고, <b>내가 쓰던 서식에 내용만</b> 채우게 합니다.</div></section>
+<section class="screen" data-group="3교시 · PPT 만들기" data-title="올리기 전에, 받은 뒤에"><div class="kicker"><span class="tag">이론</span><span>3교시 · PPT 만들기</span></div><h1>올리기 전에, 받은 뒤에</h1><div class="dash"></div><p class="lead">AI의 답은 초안이고 확인은 강사의 몫입니다.</p><h2>AI에 넣으면 안 되는 자료</h2><div class="cards"><div class="cardx g"><div class="k">01</div><div class="t">개인정보</div><div class="d">이름, 연락처, 인사·급여 기록</div></div><div class="cardx"><div class="k">02</div><div class="t">비공개 문서</div><div class="d">대외비, 감사 자료, 결재 전 문서</div></div><div class="cardx"><div class="k">03</div><div class="t">남의 저작물</div><div class="d">출처를 밝힐 수 없는 그림과 자료</div></div></div><h2>받은 PPT는 원문과 대조합니다</h2><div class="checks"><label><input type="checkbox"><div>법령<small>조문 번호와 내용이 현행과 같은가요?</small></div></label><label><input type="checkbox"><div>수치<small>금액·기간·비율의 출처가 있나요?</small></div></label><label><input type="checkbox"><div>날짜<small>시행일과 개정일이 올해 기준인가요?</small></div></label></div></section>
+<section class="screen" data-group="3교시 · PPT 만들기" data-title="실습 3. 샘플을 넣고 PPT 만들기"><div class="kicker"><span class="tag do">실습</span><span>3교시 · PPT 만들기</span></div><h1>실습 3. 샘플을 넣고 PPT 만들기</h1><div class="dash"></div><p class="lead">내 샘플 PPT의 서식으로 2교시 원고를 PPT 한 벌로 만듭니다.</p><div class="timer" data-min="25"><div class="goal"><b>목표</b>내 샘플 서식으로 PPT 한 벌 만들기</div><div class="clock"></div><button class="st">시작</button><button class="rs">처음으로</button></div><ol class="steps"><li><b>올리기</b><span>샘플 PPT 파일을 첨부하고, 아래 요청문을 복사해 보냅니다. 2교시에 붙여 둔 원고가 들어 있습니다.</span></li><li><b>받아서 열기</b><span>받은 파일을 열어 처음부터 끝까지 넘겨 봅니다.</span></li><li><b>세 번 고치기</b><span>내용 → 분량 → 모양 순서로, 한 번에 하나씩 요청합니다.</span></li></ol><div class="prompt" data-tpl="첨부한 PPT 파일은 내가 평소에 쓰는 강의 자료야.&#10;이 파일의 서식을 그대로 지켜서 ‘{topic|내 강의 주제}’ 강의용 새 PPT 파일을 만들어줘.&#10;- 지킬 것: 글꼴, 색상, 제목 위치, 여백, 표지와 본문의 배치&#10;- 넣을 내용: 아래 슬라이드 원고 (한 장에 메시지 하나)&#10;- 하지 말 것: 새로운 색·아이콘·그림 추가, 원고에 없는 내용 추가&#10;- 문장: 짧게, 내가 말하듯이. 글머리표만 늘어놓지 말고 표나 카드로 정리&#10;&#10;{script|2교시에 만든 슬라이드 원고 붙여넣기}&#10;&#10;완성되면 내려받을 수 있는 PPT 파일로 줘."><div class="ph"><span>내 요청문</span><button class="copy">복사</button></div><pre></pre></div><p class="hint">원고가 비어 있으면 2교시 실습 화면의 ‘완성한 원고 붙여 두기’ 칸에 붙여넣으세요.</p><div class="form"><label><b>슬라이드 원고<small>여기서 고쳐도 됩니다</small></b><textarea data-f="script" placeholder="AI가 써 준 장별 원고를 여기에 붙여넣으세요" class="tall"></textarea></label></div><p class="saved">쓴 내용은 이 브라우저에만 저장되고, 다음 실습의 요청문에 그대로 이어집니다.</p><h2>이어서 요청하기 (누르면 복사됩니다)</h2><div class="chips"><button>【5】장에 빠진 내용이 있어. 원고의 핵심 문장을 그대로 넣어줘.</button><button>【8】장은 글이 많아. 두 장으로 나눠줘.</button><button>【3】장 제목이 두 줄로 넘어가. 한 줄에 들어가게 줄여줘.</button><button>샘플에 없는 색이 쓰였어. 샘플의 색만 쓰도록 고쳐줘.</button><button>‘극대화’, ‘모색’ 같은 표현을 구체적인 행동과 숫자로 바꿔줘.</button></div><p class="hint">사용량 제한에 걸리면 다른 AI를 열어 샘플과 원고를 다시 올리고 이어 갑니다. 장 번호와 보이는 현상을 그대로 말하는 것이 가장 빠릅니다.</p></section>
+<section class="screen" data-group="3교시 · PPT 만들기" data-title="패들렛 ③ 완성 PPT"><div class="kicker"><span class="tag up">제출</span><span>3교시 · PPT 만들기</span></div><h1>패들렛 ③ 완성 PPT</h1><div class="dash"></div><p class="lead">완성이 아니어도 괜찮습니다. 지금까지 만든 것을 올립니다.</p><div class="padlet"><div class="go"><a class="btn" data-link="padlet3" href="#">패들렛 열기</a><div>PPT 파일은 오후에<br>다시 사용합니다</div></div><div><div class="q"><b>완성한 PPT 파일을 올려 주세요</b><span>파일 이름은 ‘강의 주제’로 저장</span></div><div class="q"><b>고치면서 가장 달라진 점은?</b><span>예) 글머리표를 표로 바꾸니 한눈에 보임</span></div></div></div><h2>오전 정리</h2><div class="cards"><div class="cardx"><div class="k">주제</div><div class="t">좁게, 분명하게, 50분 안에</div><div class="d"></div></div><div class="cardx"><div class="k">원고</div><div class="t">네 칸 요청문으로 장별 한 줄</div><div class="d"></div></div><div class="cardx"><div class="k">PPT</div><div class="t">내 샘플 서식에 내용만 채우기</div><div class="d"></div></div></div><div class="say">오후에는 이 PPT를 웹페이지로 바꿔 <b>주소로 공유</b>합니다. 쉬는 동안 깃허브에 로그인해 두세요.</div><p><a class="btn" href="pm.html">오후 실습 페이지로 →</a></p></section></main></div>
+<div class="foot"><button class="prev">← 이전</button><div class="pos"></div><button class="next">다음 →</button></div>
+<div class="toast" role="status"></div>
+<script>
+/* ===== 강사 설정: 주소가 정해지면 따옴표 안에 넣어 주세요. 비워 두면 버튼이 꺼진 상태로 보입니다. ===== */
+const LINKS = {
+  padlet:  '',   // 패들렛 전체 주소 (위쪽 바로가기 버튼)
+  padlet1: '',   // 패들렛 ① 강의 주제와 대상
+  padlet2: '',   // 패들렛 ② 슬라이드 원고
+  padlet3: ''    // 패들렛 ③ 완성 PPT
+};
+const KEY = 'am-';
+
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}},set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}};
+function toast(m){const t=$('.toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1400)}
+async function copy(text,btn){
+  try{await navigator.clipboard.writeText(text)}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(_){}ta.remove()}
+  toast('복사했습니다. AI 채팅창에 붙여넣으세요');
+  if(btn&&btn.classList.contains('copy')){btn.classList.add('ok');btn.textContent='복사됨';setTimeout(()=>{btn.classList.remove('ok');btn.textContent='복사'},1500)}
+}
+// 링크 채우기
+$$('[data-link]').forEach(a=>{const u=LINKS[a.dataset.link];if(u){a.href=u;a.target='_blank';a.rel='noopener'}else{a.classList.add('off');a.removeAttribute('href');if(a.classList.contains('btn'))a.textContent='주소는 강사 화면을 확인하세요'}});
+// 요청문: 【 】 강조와 복사. data-tpl이 있으면 입력 칸의 내용으로 채웁니다.
+const shared={get(k){try{return localStorage.getItem('lec-f-'+k)||''}catch(e){return ''}},set(k,v){try{localStorage.setItem('lec-f-'+k,v)}catch(e){}}};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const build=t=>t.replace(/\{(\w+)\?\}/g,(m,k)=>{const v=shared.get(k).trim();return v?', '+v:''}).replace(/\{(\w+)\|([^}]*)\}/g,(m,k,ph)=>{const v=shared.get(k).trim();return v||'【'+ph+'】'});
+function renderPrompts(){$$('.prompt').forEach(p=>{const pre=$('pre',p);if(p.dataset.tpl===undefined&&p.dataset.raw===undefined)p.dataset.raw=pre.textContent;
+  const raw=p.dataset.tpl!==undefined?build(p.dataset.tpl):p.dataset.raw;p._text=raw;pre.innerHTML=esc(raw).replace(/【[^】]*】/g,m=>'<mark>'+m+'</mark>')})}
+$$('.prompt .copy').forEach(b=>b.onclick=()=>copy(b.closest('.prompt')._text,b));
+function loadFields(){$$('[data-f]').forEach(el=>{el.value=shared.get(el.dataset.f)});$$('[data-multi]').forEach(c=>{c.checked=shared.get(c.dataset.multi).split(', ').includes(c.value)})}
+$$('[data-f]').forEach(el=>el.addEventListener('input',()=>{shared.set(el.dataset.f,el.value);$$('[data-f="'+el.dataset.f+'"]').forEach(o=>{if(o!==el)o.value=el.value});renderPrompts()}));
+$$('[data-multi]').forEach(c=>c.addEventListener('change',()=>{const k=c.dataset.multi;shared.set(k,$$('[data-multi="'+k+'"]').filter(x=>x.checked).map(x=>x.value).join(', '));renderPrompts()}));
+$$('.tabs button').forEach(b=>b.onclick=()=>{const d=JSON.parse(b.dataset.fill);Object.entries(d).forEach(([k,v])=>shared.set(k,v));loadFields();renderPrompts();toast('예시를 칸에 채웠습니다. 내 것으로 고쳐 쓰세요')});
+loadFields();renderPrompts();
+$$('.chips button').forEach(b=>b.onclick=()=>copy(b.textContent.trim()));
+// 체크 저장
+$$('.checks input').forEach((c,i)=>{const k='c'+i;c.checked=store.get(k)==='1';c.onchange=()=>store.set(k,c.checked?'1':'0')});
+// 화면 이동
+const screens=$$('.screen'),nav=$('nav');let cur=0,g='';
+screens.forEach((s,i)=>{if(s.dataset.group!==g){g=s.dataset.group;const d=document.createElement('div');d.className='grp';d.textContent=g;nav.appendChild(d)}
+  const b=document.createElement('button');b.innerHTML='<span class="n">'+(i+1)+'</span><span>'+s.dataset.title+'</span>';b.onclick=()=>go(i);nav.appendChild(b)});
+const btns=$$('nav button');
+function go(i,push=true){cur=Math.max(0,Math.min(screens.length-1,i));screens.forEach((s,k)=>s.classList.toggle('on',k===cur));btns.forEach((b,k)=>{b.classList.toggle('on',k===cur);b.classList.toggle('done',k<cur)});
+  $('.prev').disabled=cur===0;$('.next').disabled=cur===screens.length-1;$('.pos').textContent=(cur+1)+' / '+screens.length+' · '+screens[cur].dataset.group;$('.prev').textContent='← '+(cur?screens[cur-1].dataset.title:'처음');$('.next').textContent=(cur<screens.length-1?screens[cur+1].dataset.title:'끝')+' →';
+  $('.bar i').style.width=((cur+1)/screens.length*100)+'%';nav.classList.remove('open');if(push)history.replaceState(null,'','#'+(cur+1));store.set('pos',cur);window.scrollTo(0,0)}
+$('.prev').onclick=()=>go(cur-1);$('.next').onclick=()=>go(cur+1);
+$('.menu').onclick=()=>nav.classList.toggle('open');
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(e.target.tagName))return;if(e.key==='ArrowRight'||e.key==='PageDown')go(cur+1);if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1)});
+const h=parseInt(location.hash.slice(1));go(h?h-1:parseInt(store.get('pos')||'0')||0,false);
+window.addEventListener('hashchange',()=>{const n=parseInt(location.hash.slice(1));if(n)go(n-1,false)});
+// 타이머
+$$('.timer').forEach(t=>{const total=+t.dataset.min*60;let left=total,id=null;const c=$('.clock',t),sb=$('.st',t);
+  const show=()=>{c.textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0');c.classList.toggle('end',left===0)};
+  sb.onclick=()=>{if(id){clearInterval(id);id=null;sb.textContent='이어서'}else{if(left===0)left=total;sb.textContent='멈춤';id=setInterval(()=>{left--;show();if(left<=0){clearInterval(id);id=null;sb.textContent='다시';toast('실습 시간이 끝났습니다')}},1000)}};
+  $('.rs',t).onclick=()=>{clearInterval(id);id=null;left=total;sb.textContent='시작';show()};show()});
+// 주소 만들기
+const ub=$('.urlbox');if(ub){const a=$('#gid'),b=$('#grepo'),o=$('.out',ub),op=$('.open',ub);a.value=store.get('gid')||'';b.value=store.get('grepo')||'';
+  const clean=v=>v.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  const up=()=>{const i=clean(a.value),r=clean(b.value);store.set('gid',a.value);store.set('grepo',b.value);const ok=i&&r;o.textContent=ok?'https://'+i+'.github.io/'+r+'/':'아이디와 저장소 이름을 입력하면 주소가 만들어집니다';op.classList.toggle('off',!ok);if(ok)op.href=o.textContent;$('.cp',ub).disabled=!ok};
+  a.oninput=b.oninput=up;$('.cp',ub).onclick=()=>copy(o.textContent);up()}
+
+</script></body></html>
